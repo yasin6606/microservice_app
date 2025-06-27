@@ -1,25 +1,25 @@
 services:
   front:
     build:
-      context: /home/yasin/Documents/learning/a/frontend
+      context: /home/yasin/Documents/learning/micro_service/frontend
       dockerfile: Dockerfile
     ports:
       - "80:3000"
     env_file:
-      - /home/yasin/Documents/learning/a/frontend/.env
+      - /home/yasin/Documents/learning/micro_service/frontend/.env
     networks:
       - share_network
     depends_on:
       - web_server
   web_server:
     build:
-      context: /home/yasin/Documents/learning/a/services/web_server
+      context: /home/yasin/Documents/learning/micro_service/services/web_server
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
       - "5001:5001"
     env_file:
-      - /home/yasin/Documents/learning/a/services/web_server/.env
+      - /home/yasin/Documents/learning/micro_service/services/web_server/.env
     command: npm run start
     networks:
       - share_network
@@ -33,7 +33,7 @@ services:
     networks:
       - share_network
     volumes:
-      - /home/yasin/Documents/learning/a/db:/data/
+      - /home/yasin/Documents/learning/micro_service/db:/data/
   rabbit:
     image: rabbitmq:3.13.7-management-alpine
     ports:
