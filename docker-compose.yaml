@@ -1,0 +1,46 @@
+services:
+  front:
+    build:
+      context: /home/yasin/Documents/learning/a/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:3000"
+    env_file:
+      - /home/yasin/Documents/learning/a/frontend/.env
+    networks:
+      - share_network
+    depends_on:
+      - web_server
+  web_server:
+    build:
+      context: /home/yasin/Documents/learning/a/services/web_server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    env_file:
+      - /home/yasin/Documents/learning/a/services/web_server/.env
+    command: npm run start
+    networks:
+      - share_network
+    depends_on:
+      - mongo
+      - rabbit
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    networks:
+      - share_network
+    volumes:
+      - /home/yasin/Documents/learning/a/db:/data/
+  rabbit:
+    image: rabbitmq:3.13.7-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - share_network
+
+networks:
+  share_network:
