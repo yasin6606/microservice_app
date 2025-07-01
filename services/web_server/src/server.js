@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const rabbitmq = require('./rabbitConnection');
 require('dotenv').config();
 
 const app = express();
@@ -21,28 +22,36 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // User schema
 const userSchema = new mongoose.Schema({
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    email: {type: String, required: true, unique: true},
+    password: {type: String, required: true},
 });
 
 const User = mongoose.model('User', userSchema);
 
 // Registration endpoint
 app.post('/api/register', async (req, res) => {
-    const { email, password } = req.body;
+    const {email, password} = req.body;
 
     try {
-        const newUser = new User({ email, password });
+        const newUser = new User({email, password});
         await newUser.save();
-        res.status(201).send({ message: 'User registered successfully' });
+        res.status(201).send({message: 'User registered successfully'});
     } catch (error) {
         if (error.code === 11000) {
             // Duplicate email
-            return res.status(400).send({ message: 'Email already exists' });
+            return res.status(400).send({message: 'Email already exists'});
         }
-        res.status(500).send({ message: 'Server error' });
+        res.status(500).send({message: 'Server error'});
     }
 });
+
+app.get('/api/rabbit', async (req, res) => {
+    const rabbitObj = new rabbitmq();
+    await rabbitObj.initRabbitConnection();
+    console.log(rabbitObj.rabbitConnectionObject);
+
+    res.status(200);
+})
 
 // Start the server
 const PORT = process.env.PORT || 5000;

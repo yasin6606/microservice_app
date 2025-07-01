@@ -4,7 +4,7 @@ services:
       context: /home/yasin/Documents/learning/micro_service/frontend
       dockerfile: Dockerfile
     ports:
-      - "80:3000"
+      - "80:80"
     env_file:
       - /home/yasin/Documents/learning/micro_service/frontend/.env
     networks:
@@ -15,32 +15,46 @@ services:
     build:
       context: /home/yasin/Documents/learning/micro_service/services/web_server
       dockerfile: Dockerfile
-    ports:
-      - "5000:5000"
-      - "5001:5001"
+    expose:
+      - 5000
+      - 5001
     env_file:
       - /home/yasin/Documents/learning/micro_service/services/web_server/.env
     command: npm run start
     networks:
       - share_network
     depends_on:
-      - mongo
-      - rabbit
+      mongo:
+        condition: service_healthy
+      rabbit:
+        condition: service_healthy
   mongo:
     image: mongo:latest
+    expose:
+      - 27017
     ports:
       - "27017:27017"
     networks:
       - share_network
     volumes:
       - /home/yasin/Documents/learning/micro_service/db:/data/
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.runCommand('ping').ok" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   rabbit:
     image: rabbitmq:3.13.7-management-alpine
+    expose:
+      - 5672
     ports:
-      - "5672:5672"
       - "15672:15672"
     networks:
       - share_network
-
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 networks:
   share_network:
