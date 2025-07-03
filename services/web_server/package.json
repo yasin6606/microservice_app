@@ -1,12 +1,13 @@
 {
-  "name": "node",
+  "name": "web_server_service",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/server.js"
+    "clean": "clear && rm -rf build",
+    "build": "npm run clean && tsc",
+    "start": "npm run build && node ./build/index.js"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
@@ -14,8 +15,16 @@
     "amqplib": "^0.10.8",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.6.1",
     "express": "^5.1.0",
-    "mongoose": "^8.13.2"
+    "mongoose": "^8.16.1"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.7",
+    "@types/body-parser": "^1.19.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/mongoose": "^5.11.96",
+    "typescript": "^5.8.3"
   }
 }
